@@ -113,8 +113,8 @@ def _generate_samples(
     dit_duration = 1.2 / wpm
     dah_duration = dit_duration * 3
     symbol_space_duration = dit_duration
-    letter_space_duration = (dit_duration * 3) - symbol_space_duration
-    word_space_duration = (dit_duration * 7) - letter_space_duration
+    letter_space_duration = (dit_duration * 3)
+    word_space_duration = (dit_duration * 7)
 
     audio_params = {
         'attack': dit_duration / 10,
