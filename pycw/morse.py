@@ -8,6 +8,7 @@ from .synth import generate_silence, generate_sin_wave
 DEFAULT_SAMPLE_RATE = 44100
 DEFAULT_VOLUME = 1.0
 DEFAULT_TONE = 800
+DEFAULT_SPACING = 1.0
 
 DIT = object()
 DAH = object()
@@ -92,20 +93,22 @@ def stream_wave(
 
 def output_wave(
     file: str, text: str, wpm: int, tone: int = DEFAULT_TONE,
-    volume: float = DEFAULT_VOLUME, sample_rate: int = DEFAULT_SAMPLE_RATE
+    volume: float = DEFAULT_VOLUME, sample_rate: int = DEFAULT_SAMPLE_RATE,
+    spacing: float = DEFAULT_SPACING
     ) -> None:
     text = normalize_text(text)
     with wave.open(file, "wb") as fp:
         fp.setnchannels(1)
         fp.setsampwidth(2)
         fp.setframerate(sample_rate)
-        for sample in _generate_samples(text, wpm, tone, volume, sample_rate):
+        for sample in _generate_samples(text, wpm, tone, volume, sample_rate, spacing):
             fp.writeframes(sample)
 
 
 def _generate_samples(
     text: str, wpm: int, tone: int = DEFAULT_TONE,
-    volume: float = DEFAULT_VOLUME, sample_rate: int = DEFAULT_SAMPLE_RATE
+    volume: float = DEFAULT_VOLUME, sample_rate: int = DEFAULT_SAMPLE_RATE,
+    spacing: float = DEFAULT_SPACING
     ) -> numpy.array:
     dit_duration = 1.2 / wpm
     dah_duration = dit_duration * 3
@@ -124,8 +127,8 @@ def _generate_samples(
         DIT: generate_sin_wave(tone, dit_duration, **audio_params),
         DAH: generate_sin_wave(tone, dah_duration, **audio_params),
         SYMBOL_SPACE: generate_silence(symbol_space_duration),
-        LETTER_SPACE: generate_silence(letter_space_duration),
-        WORD_SPACE: generate_silence(word_space_duration),
+        LETTER_SPACE: generate_silence(letter_space_duration * spacing),
+        WORD_SPACE: generate_silence(word_space_duration * spacing),
     }
 
     def _encode_letter(letter: str):
@@ -147,5 +150,5 @@ def _generate_samples(
 
 
 def normalize_text(text: str) -> str:
-    text = re.sub(r'\s+', ' ', text.lower().strip())
+    text = re.sub(r'\s+', ' ', text.lower())
     return text

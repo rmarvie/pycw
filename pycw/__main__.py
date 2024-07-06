@@ -14,6 +14,8 @@ def main():
                 help='Input text. Overrides --input.')
     parser.add_argument('-s', '--speed', type=int, default=12,
                 help='Speed, in words per minute (default: 12)')
+    parser.add_argument('-f', '--spacing', type=float, default=1.0,
+                help='Spacing factor (default: 1.0)')
     parser.add_argument('-n', '--tone', type=int, default=800,
                 help='Tone frequency, in Hz (default: 800)')
     parser.add_argument('-v', '--volume', type=float, default=1.0,
@@ -34,9 +36,10 @@ def main():
         os.system("pycw -h")
     else:
         output_wave(
-            args.output, input_text, 
+            args.output, input_text,
             args.speed, args.tone, args.volume,
-            args.sample_rate
+            args.sample_rate,
+            args.spacing,
         )
 
 if __name__ == '__main__':
