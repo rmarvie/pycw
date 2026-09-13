@@ -26,7 +26,7 @@ def main():
                 help='Name of the output file')
     args = parser.parse_args()
 
-    if not args.input:
+    if args.input:
         with open(args.input, "r") as fb:
             input_text = fb.read()
     else:

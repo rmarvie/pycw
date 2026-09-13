@@ -15,6 +15,7 @@ DAH = object()
 SYMBOL_SPACE = object()
 LETTER_SPACE = object()
 WORD_SPACE = object()
+LINE_SPACE = object()
 
 MORSE_TABLE = {
     'a': (DIT, DAH),
@@ -115,6 +116,7 @@ def _generate_samples(
     symbol_space_duration = dit_duration
     letter_space_duration = (dit_duration * 3)
     word_space_duration = (dit_duration * 7)
+    line_space_duration = (3* word_space_duration)
 
     audio_params = {
         'attack': dit_duration / 10,
@@ -129,9 +131,14 @@ def _generate_samples(
         SYMBOL_SPACE: generate_silence(symbol_space_duration),
         LETTER_SPACE: generate_silence(letter_space_duration * spacing),
         WORD_SPACE: generate_silence(word_space_duration * spacing),
+        LINE_SPACE: generate_silence(line_space_duration * spacing),
     }
 
     def _encode_letter(letter: str):
+        if letter == '\n':
+            yield samples[LINE_SPACE]
+            return
+
         if letter == ' ':
             yield samples[WORD_SPACE]
             return
@@ -150,5 +157,5 @@ def _generate_samples(
 
 
 def normalize_text(text: str) -> str:
-    text = re.sub(r'\s+', ' ', text.lower())
-    return text
+    # text = re.sub(r'\s+', ' ', text.lower())
+    return text.lower()
